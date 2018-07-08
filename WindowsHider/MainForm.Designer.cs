@@ -34,13 +34,11 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.btnHide = new System.Windows.Forms.Button();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.cmsMain = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmiShow = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiExit = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
-            this.panel2.SuspendLayout();
             this.cmsMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -74,22 +72,11 @@
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.btnHide);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel2.Location = new System.Drawing.Point(0, 354);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(334, 96);
             this.panel2.TabIndex = 2;
-            // 
-            // btnHide
-            // 
-            this.btnHide.Location = new System.Drawing.Point(53, 21);
-            this.btnHide.Name = "btnHide";
-            this.btnHide.Size = new System.Drawing.Size(75, 23);
-            this.btnHide.TabIndex = 3;
-            this.btnHide.Text = "隐藏";
-            this.btnHide.UseVisualStyleBackColor = true;
-            this.btnHide.Click += new System.EventHandler(this.btnHide_Click);
             // 
             // notifyIcon
             // 
@@ -131,11 +118,10 @@
             this.Controls.Add(this.panel1);
             this.Name = "MainForm";
             this.Text = "MainForm";
-            this.Activated += new System.EventHandler(this.MainForm_Activated);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
             this.tabControl1.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
             this.cmsMain.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -147,7 +133,6 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button btnHide;
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ContextMenuStrip cmsMain;
         private System.Windows.Forms.ToolStripMenuItem tsmiShow;

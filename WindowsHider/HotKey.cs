@@ -12,8 +12,8 @@ namespace WindowsHider
     {   
         public const int WM_HOTKEY = 0x312; //窗口消息-热键
 
-        public const int HIDE = 100; //热键ID 
-        public const int SHOW = 101; //热键ID 
+        //public const int HIDE = 100; //热键ID 
+        //public const int SHOW = 101; //热键ID 
         
         //如果函数执行成功，返回值不为0。
         //如果函数执行失败，返回值为0。要得到扩展错误信息，调用GetLastError。
@@ -30,6 +30,18 @@ namespace WindowsHider
             IntPtr hWnd,                //要取消热键的窗口的句柄
             int id                      //要取消热键的ID
         );
+
+        /// <summary>
+        /// 向全局原子表添加一个字符串，并返回这个字符串的唯一标识符,成功则返回值为新创建的原子ID,失败返回0
+        /// </summary>
+        /// <param name="lpString"></param>
+        /// <returns></returns>
+        [DllImport("kernel32", SetLastError = true)]
+        public static extern short GlobalAddAtom(string lpString);
+
+        [DllImport("kernel32", SetLastError = true)]
+        public static extern short GlobalDeleteAtom(short nAtom); 
+
 
         //定义了辅助键的名称（将数字转变为字符以便于记忆，也可去除此枚举而直接使用数值）
         [Flags()]

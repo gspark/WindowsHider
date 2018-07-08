@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,18 +14,15 @@ namespace WindowsHider
     public partial class MainForm : Form
     {
         private readonly Dictionary<IntPtr, string> _hideforms = new Dictionary<IntPtr, string>();
-        
+
+        private int _ctrlShiftH;
+   
         public MainForm()
         {
             InitializeComponent();
         }
 
-        private void btnHide_Click(object sender, EventArgs e)
-        {
-            hideWindow();
-        }
-
-        private void hideWindow()
+        private void HideWindow()
         {
             var hWnd = Win32Api.GetForegroundWindow();
             if (!Win32Api.ShowWindow(hWnd, Win32Api.SW_HIDE))
@@ -64,31 +62,12 @@ namespace WindowsHider
             }
         }
 
-        private void MainForm_Activated(object sender, EventArgs e)
-        {
-            // 隐藏
-            HotKey.RegisterHotKey(Handle, HotKey.HIDE, HotKey.KeyModifiers.Ctrl | HotKey.KeyModifiers.Shift, Keys.H);
-            // 显示
-            HotKey.RegisterHotKey(Handle, HotKey.SHOW, HotKey.KeyModifiers.Ctrl | HotKey.KeyModifiers.Shift, Keys.Q);
-        }
-
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
             {
                 case HotKey.WM_HOTKEY:
-                    switch (m.WParam.ToInt32())
-                    {
-                        case HotKey.HIDE:    //按下的是Ctrl+Shift+H
-                            
-                            hideWindow();
-                            break;
-                        case HotKey.SHOW:    //按下的是Ctrl+Shift+Q
-                            //此处填写快捷键响应代码
-                            break;
-                        default:
-                            break;
-                    }
+                    ProcessHotkey(m);
                     break;
                 default:
                     break;
@@ -96,10 +75,21 @@ namespace WindowsHider
             base.WndProc(ref m);
         }
 
+        private void ProcessHotkey(Message m)
+        {
+            var sid = m.WParam.ToInt32();
+
+            if (_ctrlShiftH == sid)
+            {
+                MessageBox.Show("按下Alt+S"); 
+                HideWindow();
+            }
+        }
+
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            HotKey.UnregisterHotKey(Handle, HotKey.HIDE);
-            HotKey.UnregisterHotKey(Handle, HotKey.SHOW);
+            //HotKey.UnregisterHotKey(Handle, HotKey.HIDE);
+            HotKey.UnregisterHotKey(Handle, _ctrlShiftH);
 
             foreach (var form in _hideforms)
             {
@@ -122,6 +112,15 @@ namespace WindowsHider
             // 关闭所有的线程
             this.Dispose();
             this.Close();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            // 隐藏
+            _ctrlShiftH= HotKey.GlobalAddAtom("Ctrl-shift-H"); 
+            HotKey.RegisterHotKey(Handle, _ctrlShiftH, HotKey.KeyModifiers.Ctrl | HotKey.KeyModifiers.Shift, Keys.H);
+            // 显示
+            //HotKey.RegisterHotKey(Handle, HotKey.SHOW, HotKey.KeyModifiers.Ctrl | HotKey.KeyModifiers.Shift, Keys.Q);
         }
     }
 }
