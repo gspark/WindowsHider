@@ -12,9 +12,6 @@ namespace WindowsHider
     {   
         public const int WM_HOTKEY = 0x312; //窗口消息-热键
 
-        //public const int HIDE = 100; //热键ID 
-        //public const int SHOW = 101; //热键ID 
-        
         //如果函数执行成功，返回值不为0。
         //如果函数执行失败，返回值为0。要得到扩展错误信息，调用GetLastError。
         [DllImport("user32.dll", SetLastError = true)]

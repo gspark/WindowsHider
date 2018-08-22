@@ -14,6 +14,9 @@ namespace WindowsHider
         // Activates the window and displays it in its current size and position.
         public const int SW_SHOW = 5;
         
+        [DllImport("kernel32.dll")]
+        public static extern uint GetLastError();
+
         [DllImport("User32.dll", EntryPoint = "FindWindow")]
         public static extern IntPtr FindWindow(string lpClassName,string lpWindowName);
         

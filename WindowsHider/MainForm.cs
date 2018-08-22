@@ -15,7 +15,8 @@ namespace WindowsHider
     {
         private readonly Dictionary<IntPtr, string> _hideforms = new Dictionary<IntPtr, string>();
 
-        private int _ctrlShiftH;
+        private short _ctrlShiftH;
+        private IntPtr _lastHander;
    
         public MainForm()
         {
@@ -47,6 +48,8 @@ namespace WindowsHider
                 this.ShowInTaskbar = true;
                 //托盘区图标隐藏
                 ((NotifyIcon) sender).Visible = false;
+
+                ReRegisterHideKey();
             }
         }
 
@@ -55,10 +58,13 @@ namespace WindowsHider
             //判断是否选择的是最小化按钮
             if (WindowState == FormWindowState.Minimized)
             {
-                //隐藏任务栏区图标
+                //隐藏任务栏区图标 
+                //会导致窗体句柄改变
                 this.ShowInTaskbar = false;
                 //图标显示在托盘区
                 notifyIcon.Visible = true;
+
+                ReRegisterHideKey();
             }
         }
 
@@ -81,15 +87,14 @@ namespace WindowsHider
 
             if (_ctrlShiftH == sid)
             {
-                MessageBox.Show("按下Alt+S"); 
+                System.Diagnostics.Debug.WriteLine("按下Alt+S");
                 HideWindow();
             }
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            //HotKey.UnregisterHotKey(Handle, HotKey.HIDE);
-            HotKey.UnregisterHotKey(Handle, _ctrlShiftH);
+            UnRegisterHideKey();
 
             foreach (var form in _hideforms)
             {
@@ -116,11 +121,39 @@ namespace WindowsHider
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            // 隐藏
-            _ctrlShiftH= HotKey.GlobalAddAtom("Ctrl-shift-H"); 
-            HotKey.RegisterHotKey(Handle, _ctrlShiftH, HotKey.KeyModifiers.Ctrl | HotKey.KeyModifiers.Shift, Keys.H);
-            // 显示
-            //HotKey.RegisterHotKey(Handle, HotKey.SHOW, HotKey.KeyModifiers.Ctrl | HotKey.KeyModifiers.Shift, Keys.Q);
+            RegisterHideKey();
+        }
+
+        private void RegisterHideKey()
+        {
+            //隐藏
+            _ctrlShiftH = HotKey.GlobalAddAtom("Ctrl-shift-H");
+            var reg = HotKey.RegisterHotKey(Handle, _ctrlShiftH, HotKey.KeyModifiers.Ctrl | HotKey.KeyModifiers.Shift, Keys.H);
+            _lastHander = Handle;
+            System.Diagnostics.Debug.WriteLine(reg ? "RegisterHotKey success!" : "RegisterHotKey fail!");
+        }
+
+        private void UnRegisterHideKey()
+        {
+            if (_ctrlShiftH == 0) return;
+            var reg = HotKey.UnregisterHotKey(_lastHander, _ctrlShiftH);
+            if (!reg)
+            {
+                var err = Win32Api.GetLastError();
+                System.Diagnostics.Debug.WriteLine("LastError {0}", err);
+                if (err == 1400)
+                {
+                    System.Diagnostics.Debug.WriteLine(@"无效的窗口句柄");
+                }
+            }
+            System.Diagnostics.Debug.WriteLine(reg ? "UnRegisterHotKey success!" : "UnRegisterHotKey fail!");
+            HotKey.GlobalDeleteAtom(_ctrlShiftH);
+        }
+
+        private void ReRegisterHideKey()
+        {
+            UnRegisterHideKey();
+            RegisterHideKey();
         }
     }
 }
