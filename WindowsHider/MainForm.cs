@@ -13,11 +13,24 @@ namespace WindowsHider
 {
     public partial class MainForm : Form
     {
+        public class HideForm
+        {
+            public HideForm(string name)
+            {
+                this.Name = name;
+            }
+
+            public string Name { get; set; }
+        }
+        
+        
         private readonly Dictionary<IntPtr, string> _hideforms = new Dictionary<IntPtr, string>();
 
         private short _ctrlShiftH;
         private IntPtr _lastHander;
    
+        private List<HideForm> hideForms = new List<HideForm>();
+
         public MainForm()
         {
             InitializeComponent();
@@ -34,6 +47,8 @@ namespace WindowsHider
             var sb = new StringBuilder(length + 1);
             Win32Api.GetWindowText(hWnd, sb, sb.Capacity);
             _hideforms.Add(hWnd, sb.ToString());
+            hideForms.Add(new HideForm(sb.ToString()));
+            this.dataGridView1.DataSource = hideForms;
         }
 
         private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
